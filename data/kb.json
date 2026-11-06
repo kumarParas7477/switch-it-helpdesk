@@ -1,0 +1,62 @@
+[
+  {
+    "id": "KB0001",
+    "title": "VPN keeps disconnecting or dropping",
+    "keywords": ["vpn", "disconnect", "drop", "remote", "tunnel", "globalprotect"],
+    "content": "1. Switch to a stable network; try a wired connection or move closer to your router. 2. Quit the VPN client completely and reopen it. 3. Connect to the gateway nearest to you instead of using auto-select. 4. Install any pending VPN client updates and restart your laptop. 5. Turn off other VPNs or personal firewalls. If it still drops more than once an hour, raise a ticket and include the time of the last disconnect."
+  },
+  {
+    "id": "KB0002",
+    "title": "Reset a forgotten or expired password",
+    "keywords": ["password", "reset", "forgot", "expired", "locked", "lockout", "login", "account"],
+    "content": "1. Go to the self-service portal at https://password.example.com and choose 'Forgot password'. 2. Verify with your MFA method. 3. Choose a new password of at least 14 characters that you have not used before. 4. Update the saved password on your phone and in Wi-Fi settings, because old saved passwords can lock you out again. Accounts unlock automatically after 15 minutes. If you have no working MFA method, raise a ticket."
+  },
+  {
+    "id": "KB0003",
+    "title": "Outlook not syncing or email not arriving",
+    "keywords": ["outlook", "email", "mail", "sync", "syncing", "inbox", "calendar", "offline"],
+    "content": "1. Check that Outlook is not set to 'Work Offline' on the Send/Receive tab. 2. Confirm you can see new mail at https://outlook.office.com; if not, the problem is with the service rather than your laptop. 3. Quit and reopen Outlook. 4. Check that your mailbox is not full. 5. Remove and re-add your account in Outlook settings to rebuild the local cache. If webmail also shows no new mail, raise a ticket."
+  },
+  {
+    "id": "KB0004",
+    "title": "Printer not printing or showing offline",
+    "keywords": ["printer", "print", "printing", "offline", "queue", "paper", "jam", "toner"],
+    "content": "1. Check the printer's display for paper jams or empty toner. 2. Make sure you are on the office network or VPN. 3. Clear stuck jobs from the print queue. 4. Remove the printer and add it again from Settings using the name on its label. 5. Restart your laptop. If other people cannot print either, raise a ticket and include the printer name and location."
+  },
+  {
+    "id": "KB0005",
+    "title": "Laptop running slow",
+    "keywords": ["laptop", "slow", "performance", "freezing", "hanging", "fan", "memory", "disk", "computer"],
+    "content": "1. Restart your laptop; many issues clear after a restart, especially if it has been running for days. 2. Check Task Manager (Windows) or Activity Monitor (Mac) for apps using high CPU or memory and close them. 3. Close unused browser tabs. 4. Free up disk space if less than 10% is available. 5. Install pending system updates. If it is still slow after these steps or is more than 4 years old, raise a ticket to request a hardware check."
+  },
+  {
+    "id": "KB0006",
+    "title": "MFA problems: new phone or codes not working",
+    "keywords": ["mfa", "2fa", "authenticator", "code", "phone", "token", "multi-factor", "verification", "push"],
+    "content": "1. Make sure your phone's date and time are set automatically, because wrong time makes codes fail. 2. If push notifications do not arrive, open the authenticator app and pull to refresh, or use the 6-digit code. 3. For a new phone, sign in at https://mfa.example.com with your old device and register the new one. 4. If you have lost your old device, use a backup code. If you have no backup codes, raise a high-urgency ticket; the service desk must verify your identity."
+  },
+  {
+    "id": "KB0007",
+    "title": "Cannot connect to office Wi-Fi",
+    "keywords": ["wifi", "wi-fi", "wireless", "network", "internet", "connection", "corp"],
+    "content": "1. Turn Wi-Fi off and on again. 2. Connect to the 'Corp-Secure' network, not 'Guest'. 3. Choose 'Forget this network' and reconnect using your current password, especially if you changed it recently. 4. Check whether colleagues nearby are affected. 5. Restart your laptop. If nobody in the area can connect, raise a high-urgency ticket and include your building and floor."
+  },
+  {
+    "id": "KB0008",
+    "title": "Request or install software",
+    "keywords": ["software", "install", "application", "app", "license", "request", "admin", "download"],
+    "content": "1. Open the Software Center app on your laptop; approved apps install from there without admin rights. 2. If the app is not listed, raise a ticket with the app name, version, and business reason. 3. Paid software needs your manager's approval and takes about 3 business days. Do not install software downloaded from the internet, because it may be blocked by security policy."
+  },
+  {
+    "id": "KB0009",
+    "title": "Microphone or camera not working in meetings",
+    "keywords": ["teams", "zoom", "microphone", "mic", "camera", "audio", "video", "meeting", "headset"],
+    "content": "1. Check the device selected in the meeting app's settings. 2. Allow the app to use your camera and microphone in system privacy settings. 3. Quit other apps that may be using the camera. 4. Unplug and reconnect your headset. 5. Restart the app, then your laptop. If the device does not work in any app, raise a ticket."
+  },
+  {
+    "id": "KB0010",
+    "title": "Request access to a shared drive or folder",
+    "keywords": ["access", "shared", "drive", "folder", "permission", "sharepoint", "denied", "file"],
+    "content": "1. Ask the folder owner or your manager to confirm you should have access. 2. Raise a ticket with the full folder path and the level of access you need (read or edit). 3. Access changes take effect within 4 hours; sign out and back in if you still see 'Access denied' after that."
+  }
+]

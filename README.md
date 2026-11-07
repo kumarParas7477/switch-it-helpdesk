@@ -5,9 +5,9 @@ An IT helpdesk that works where the team already chats. Employees ask for help i
 Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/switch) on [Switch](https://github.com/sandbox-quantum/switch).
 
 ```
- Employee                      it-helpdesk agent                     IT engineer
- ────────                      ───────────────────                     ───────────
- it-help room                                                        it-escalations room
+ Employee                      it-helpdesk agent                       IT engineer
+ ────────                      ─────────────────                       ───────────
+ it-help room                                                          it-escalations room
 
  "I need access to the   ──►  searches the knowledge base
   Finance drive"              checks open tickets

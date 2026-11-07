@@ -5,11 +5,12 @@
       "Bash(python3 helpdesk.py:*)"
     ],
     "deny": [
+      "Read",
+      "Glob",
+      "Grep",
       "Write",
       "Edit",
-      "NotebookEdit",
-      "Read(../data/**)",
-      "Read(./.claude/**)"
+      "NotebookEdit"
     ]
   }
 }

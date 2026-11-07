@@ -6,9 +6,16 @@ tool functions need to change; the menu and the agent loop stay the same.
 """
 
 import json
+import os
 import re
+from contextlib import contextmanager
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    import fcntl
+except ImportError:  # Windows has no fcntl; tickets are then saved without a lock.
+    fcntl = None
 
 DATA_DIR = Path(__file__).parent / "data"
 KB_FILE = DATA_DIR / "kb.json"
@@ -92,6 +99,24 @@ def _load_tickets():
     return json.loads(TICKETS_FILE.read_text())
 
 
+@contextmanager
+def _tickets_for_update():
+    """Load the tickets for the caller to change, then save them, under one lock.
+
+    The Switch agent can run a session per room at the same time. Without the lock,
+    two sessions saving at once could each overwrite the other's change.
+    """
+    with open(TICKETS_FILE.with_suffix(".lock"), "w") as lock:
+        if fcntl:
+            fcntl.flock(lock, fcntl.LOCK_EX)  # Released when the file closes.
+        tickets = _load_tickets()
+        yield tickets  # If the caller raises here, nothing is saved.
+        # Write a temporary file, then swap it in, so a reader never sees half a file.
+        temp = TICKETS_FILE.with_suffix(".tmp")
+        temp.write_text(json.dumps(tickets, indent=2) + "\n")
+        os.replace(temp, TICKETS_FILE)
+
+
 def search_knowledge_base(query):
     articles = json.loads(KB_FILE.read_text())
     query_words = _words(query)
@@ -131,22 +156,21 @@ def create_ticket(user_email, short_description, category, urgency):
     if urgency not in URGENCIES:
         raise ValueError(f"urgency must be one of {URGENCIES}")
 
-    tickets = _load_tickets()
-    last_number = max(
-        (int(ticket["number"].removeprefix("INC")) for ticket in tickets),
-        default=FIRST_TICKET_NUMBER - 1,
-    )
-    ticket = {
-        "number": f"INC{last_number + 1:07d}",
-        "user_email": user_email,
-        "short_description": short_description,
-        "category": category,
-        "urgency": urgency,
-        "state": "New",
-        "opened_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
-    }
-    tickets.append(ticket)
-    TICKETS_FILE.write_text(json.dumps(tickets, indent=2) + "\n")
+    with _tickets_for_update() as tickets:
+        last_number = max(
+            (int(ticket["number"].removeprefix("INC")) for ticket in tickets),
+            default=FIRST_TICKET_NUMBER - 1,
+        )
+        ticket = {
+            "number": f"INC{last_number + 1:07d}",
+            "user_email": user_email,
+            "short_description": short_description,
+            "category": category,
+            "urgency": urgency,
+            "state": "New",
+            "opened_at": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+        }
+        tickets.append(ticket)
     return {"ticket": ticket}
 
 
@@ -155,15 +179,14 @@ def update_ticket(number, state, note=None):
     if state not in TICKET_STATES:
         raise ValueError(f"state must be one of {TICKET_STATES}")
 
-    tickets = _load_tickets()
-    for ticket in tickets:
-        if ticket["number"] == number:
-            ticket["state"] = state
-            if note:
-                ticket.setdefault("notes", []).append(note)
-            TICKETS_FILE.write_text(json.dumps(tickets, indent=2) + "\n")
-            return {"ticket": ticket}
-    raise ValueError(f"No ticket numbered {number}")
+    with _tickets_for_update() as tickets:
+        ticket = next((t for t in tickets if t["number"] == number), None)
+        if ticket is None:
+            raise ValueError(f"No ticket numbered {number}")
+        ticket["state"] = state
+        if note:
+            ticket.setdefault("notes", []).append(note)
+    return {"ticket": ticket}
 
 
 _TOOL_FUNCTIONS = {

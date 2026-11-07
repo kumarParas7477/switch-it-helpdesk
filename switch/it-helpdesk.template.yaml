@@ -96,6 +96,7 @@ rooms:
   - name: "{team}-escalations"
     description: Where the IT engineer approves requests and takes over cases
     bridge: "{bridge}"
+    channel_type: channel_private
     agents: ["{team}-helpdesk"]
     users: ["{$creator}"]
     kickoff: |

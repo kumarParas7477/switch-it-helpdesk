@@ -1,6 +1,7 @@
 """Tests for the commands the Switch agent runs, and for updating tickets."""
 
 import json
+from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
@@ -66,3 +67,15 @@ def test_update_rejects_unknown_ticket_and_state(tickets_file, capsys):
 def test_terminal_agent_cannot_update_tickets():
     assert "update_ticket" not in [tool["name"] for tool in tools.TOOLS]
     assert "error" in json.loads(tools.run_tool("update_ticket", {"number": "INC0010001", "state": "Closed"}))
+
+
+def test_tickets_created_at_the_same_time_are_all_kept(tickets_file):
+    def create(i):
+        return tools.create_ticket("alex@example.com", f"Problem {i}", "other", "low")
+
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        list(pool.map(create, range(20)))
+
+    numbers = [t["number"] for t in json.loads(tickets_file.read_text())]
+    assert len(numbers) == 20
+    assert len(set(numbers)) == 20

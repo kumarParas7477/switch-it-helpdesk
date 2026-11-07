@@ -1,7 +1,8 @@
 """Command-line helpdesk tools for the Switch agent.
 
-Switch runs Claude Code as the agent, and Claude Code runs these commands. They
-use the same functions as the terminal agent, and print JSON for it to read.
+Switch runs a coding agent (Claude Code by default) in this folder, and the
+agent runs these commands. They use the same functions as the terminal agent,
+and print JSON for the agent to read.
 
     python3 helpdesk.py search "vpn dropping"
     python3 helpdesk.py tickets alex@example.com

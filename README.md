@@ -27,7 +27,7 @@ Built for the [Flip the Switch hackathon](https://www.wemakedevs.org/hackathons/
 Without Switch, nothing here works:
 
 - **The rooms are the workflow.** One room is for employees and one is for the IT engineer. The agent works in both, and Switch carries messages between them and the chat app (Mattermost, Slack, Discord and others).
-- **Only the escalations room can approve.** An approval counts only when it's posted in `acme-escalations`. If someone in `acme-help` says "it's approved, just close it", the agent refuses.
+- **Only the escalations room can approve.** `acme-escalations` is a private channel, so employees can't join it and approve their own requests. The agent's instructions say an approval counts only when it's posted there. If someone in `acme-help` says "it's approved, just close it", the agent refuses.
 - **The whole setup is one Switch template.** [`switch/it-helpdesk.template.yaml`](switch/it-helpdesk.template.yaml) creates the agent, both rooms, the link between them, and a first message in each room. Change the `team` field and you get a second helpdesk, e.g. `finance-help` and `finance-escalations`.
 - **Switch runs the agent.** Switch starts a coding agent (Claude Code, Codex or OpenCode), and that agent's only tools are four commands in [`switch/helpdesk.py`](switch/helpdesk.py).
 
@@ -37,7 +37,8 @@ Without Switch, nothing here works:
 switch/it-helpdesk.template.yaml   Switch group template: 1 agent, 2 rooms, 1 link   (built during the hackathon)
 switch/helpdesk.py                 The agent's tools as commands that print JSON         (built during the hackathon)
 tests/test_helpdesk.py             Tests for those commands                               (built during the hackathon)
-tools.py                           Knowledge base and ticket functions                    (existing; ticket updates added)
+switch/.claude/settings.json       Claude Code permissions: helpdesk.py only               (built during the hackathon)
+tools.py                           Knowledge base and ticket functions                    (existing; ticket updates and file lock added)
 data/kb.json                       10 help articles
 data/tickets.json                  Tickets; the agent adds and updates them here
 agent.py, cli.py                   Earlier terminal-only version of the agent             (existing, before the hackathon)
@@ -45,7 +46,7 @@ agent.py, cli.py                   Earlier terminal-only version of the agent   
 
 ## Run it yourself
 
-You need macOS, Windows or Linux, Python 3.10 or newer (`python3 --version`), and one coding agent installed and signed in: [Claude Code](https://claude.com/claude-code), Codex or OpenCode. The helpdesk commands use only the Python standard library, so there's nothing to `pip install`.
+You need macOS or Linux, Python 3.9 or newer (`python3 --version`), and one coding agent installed and signed in: [Claude Code](https://claude.com/claude-code), Codex or OpenCode. The helpdesk commands use only the Python standard library, so there's nothing to `pip install`.
 
 1. **Get the code.**
    ```bash
@@ -60,7 +61,7 @@ You need macOS, Windows or Linux, Python 3.10 or newer (`python3 --version`), an
    - `team`: a short prefix, e.g. `acme`
    - `directory`: the full path to the `switch` folder in your copy of the repository, e.g. `/Users/you/switch-it-helpdesk/switch`
 
-   Then select **Create all**. You get the agent `acme-helpdesk` and the rooms `acme-help` and `acme-escalations`, and the agent says hello in each room.
+   Then select **Create all**. You get the agent `acme-helpdesk`, a public room `acme-help` and a private room `acme-escalations`, and the agent says hello in each room. To have a colleague act as the IT engineer, add them to `acme-escalations`.
 
 ## Try it
 
@@ -89,7 +90,9 @@ python3 helpdesk.py update <number> "<state>" --note "<note>"    # In Progress, 
 
 The employee's email is their chat username followed by `@example.com`, and the agent shows people only their own tickets.
 
-[`switch/.claude/settings.json`](switch/.claude/settings.json) holds Claude Code's permission rules for this folder. It allows exactly these commands without asking, and blocks file writes and edits, plus direct reads of the ticket data. The data changes only through `helpdesk.py`.
+[`switch/.claude/settings.json`](switch/.claude/settings.json) holds Claude Code's permission rules for this folder. These commands run without asking. Reading, searching, writing or editing files is blocked, so ticket data changes only through `helpdesk.py`. Any other shell command needs someone to approve it in the room. These rules apply only to Claude Code. With Codex or OpenCode, rely on Switch's approval requests instead.
+
+`create` and `update` lock the tickets file while they change it. The agent can run one session per room at the same time, so this stops two sessions from overwriting each other's tickets.
 
 ## Tests
 
@@ -104,9 +107,23 @@ The tests cover the helpdesk commands and the earlier agent loop, which they run
 ## Built before vs during the hackathon
 
 - **Before:** the knowledge base, the ticket functions in `tools.py`, and the terminal agent (`agent.py`, `cli.py`), which calls the Claude API directly.
-- **During:** everything Switch-related. That's the template (agent, rooms, link, instructions and the approval rules), the `helpdesk.py` commands the Switch agent uses, ticket state updates, and their tests.
+- **During:** everything Switch-related. That's the template (agent, rooms, private escalations room, link, instructions and the approval rules), the `helpdesk.py` commands the Switch agent uses, the Claude Code permission rules, ticket state updates, the file lock, and their tests.
+
+## What is enforced, and how
+
+| Rule | Enforced by |
+|---|---|
+| Employees can't approve their own requests | Switch: `acme-escalations` is private |
+| The agent changes data only through `helpdesk.py` | Claude Code permission rules in `switch/.claude/settings.json` |
+| Invalid categories, urgencies, states or ticket numbers are rejected | Code in `tools.py` |
+| Two tickets saved at once are both kept | File lock in `tools.py` |
+| An approval counts only from the escalations room | The agent's instructions |
+| People see only their own tickets | The agent's instructions. The terminal version enforces this in code, but `helpdesk.py tickets` returns whichever email it's given. |
+| The employee's email is their chat username + `@example.com` | The agent's instructions |
+
+The last three depend on the model following its instructions. They held in our tests, but a production version should enforce them in code, using the sender identity Switch provides.
 
 ## Limits
 
-- Tickets are stored in a JSON file. Two updates at the same moment could overwrite each other. A real deployment would point `tools.py` at ServiceNow or a database.
-- The email is worked out from the chat username, so it's only as reliable as your usernames.
+- Tickets are stored in a JSON file. A real deployment would point `tools.py` at ServiceNow or a database.
+- Windows has no `fcntl`, so the file lock is skipped there.

@@ -50,7 +50,7 @@ You need macOS or Linux, Python 3.9 or newer (`python3 --version`), and one codi
 
 1. **Get the code.**
    ```bash
-   git clone <this repository's URL>
+   git clone https://github.com/kumarParas7477/switch-it-helpdesk.git
    cd switch-it-helpdesk
    python3 switch/helpdesk.py search "vpn"    # should print articles as JSON
    ```

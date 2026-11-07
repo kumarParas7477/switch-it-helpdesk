@@ -5,7 +5,7 @@ params:
     type: string
     description: Prefix for every name this creates
     pattern: "[a-z][a-z0-9-]*"
-    default: acme
+    default: it
   directory:
     type: directory
     description: Full path to the switch folder inside your copy of this repository, e.g. /Users/you/switch-it-helpdesk/switch

@@ -89,6 +89,8 @@ python3 helpdesk.py update <number> "<state>" --note "<note>"    # In Progress, 
 
 The employee's email is their chat username followed by `@example.com`, and the agent shows people only their own tickets.
 
+[`switch/.claude/settings.json`](switch/.claude/settings.json) holds Claude Code's permission rules for this folder. It allows exactly these commands without asking, and blocks file writes and edits, plus direct reads of the ticket data. The data changes only through `helpdesk.py`.
+
 ## Tests
 
 ```bash

@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(python3 helpdesk.py *)",
+      "Bash(python3 helpdesk.py:*)"
+    ],
+    "deny": [
+      "Write",
+      "Edit",
+      "NotebookEdit",
+      "Read(../data/**)",
+      "Read(./.claude/**)"
+    ]
+  }
+}
